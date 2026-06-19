@@ -1,10 +1,22 @@
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        System.out.print("$ ");
-        Scanner scanner = new Scanner(System.in);
-        String input = scanner.nextLine();
-        System.out.println(input + ": command not found");
+        BufferedReader reader = new BufferedReader(
+                new InputStreamReader(System.in));
+
+        while (true) {
+            System.out.print("$ ");
+            System.out.flush();
+
+            String command = reader.readLine();
+
+            if (command == null) {
+                break; // EOF
+            }
+
+            System.out.println(command + ": command not found");
+        }
     }
 }
