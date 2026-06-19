@@ -3,6 +3,9 @@ import java.util.*;
 
 public class Main {
 
+    private static String currentDirectory =
+            System.getProperty("user.dir");
+
     private static String findExecutable(String command) {
         String pathEnv = System.getenv("PATH");
 
@@ -27,7 +30,8 @@ public class Main {
         BufferedReader reader =
                 new BufferedReader(new InputStreamReader(System.in));
 
-        Set<String> builtins = Set.of("echo", "exit", "type", "pwd");
+        Set<String> builtins =
+                Set.of("echo", "exit", "type", "pwd", "cd");
 
         while (true) {
             System.out.print("$ ");
@@ -61,7 +65,28 @@ public class Main {
 
             // pwd
             if (command.equals("pwd")) {
-                System.out.println(System.getProperty("user.dir"));
+                System.out.println(currentDirectory);
+                continue;
+            }
+
+            // cd
+            if (command.equals("cd")) {
+                if (parts.length < 2) {
+                    continue;
+                }
+
+                String targetDir = parts[1];
+                File dir = new File(targetDir);
+
+                if (dir.exists() && dir.isDirectory()) {
+                    currentDirectory = dir.getCanonicalPath();
+                } else {
+                    System.out.println(
+                            "cd: " + targetDir
+                                    + ": No such file or directory"
+                    );
+                }
+
                 continue;
             }
 
@@ -74,7 +99,9 @@ public class Main {
                 String target = parts[1];
 
                 if (builtins.contains(target)) {
-                    System.out.println(target + " is a shell builtin");
+                    System.out.println(
+                            target + " is a shell builtin"
+                    );
                 } else {
                     String path = findExecutable(target);
 
@@ -93,8 +120,6 @@ public class Main {
 
             if (executable != null) {
                 List<String> cmd = new ArrayList<>();
-
-                // Use command name instead of full path
                 cmd.add(command);
 
                 for (int i = 1; i < parts.length; i++) {
@@ -102,6 +127,8 @@ public class Main {
                 }
 
                 ProcessBuilder pb = new ProcessBuilder(cmd);
+
+                pb.directory(new File(currentDirectory));
 
                 File exeFile = new File(executable);
                 String parentDir = exeFile.getParent();
