@@ -76,7 +76,13 @@ public class Main {
                 }
 
                 String targetDir = parts[1];
-                File dir = new File(targetDir);
+                File dir;
+
+                if (targetDir.startsWith("/")) {
+                    dir = new File(targetDir);
+                } else {
+                    dir = new File(currentDirectory, targetDir);
+                }
 
                 if (dir.exists() && dir.isDirectory()) {
                     currentDirectory = dir.getCanonicalPath();
