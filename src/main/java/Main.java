@@ -10,17 +10,33 @@ public class Main {
             System.out.print("$ ");
             System.out.flush();
 
-            String command = reader.readLine();
+            String input = reader.readLine();
 
-            if (command == null) {
+            if (input == null) {
                 break;
             }
 
-            if (command.equals("exit")) {
-                System.exit(0);
+            String[] parts = input.split(" ");
+
+            if (parts[0].equals("exit")) {
+                break;
             }
 
-            System.out.println(command + ": command not found");
+            if (parts[0].equals("echo")) {
+                StringBuilder sb = new StringBuilder();
+
+                for (int i = 1; i < parts.length; i++) {
+                    if (i > 1) {
+                        sb.append(" ");
+                    }
+                    sb.append(parts[i]);
+                }
+
+                System.out.println(sb);
+                continue;
+            }
+
+            System.out.println(parts[0] + ": command not found");
         }
     }
 }
