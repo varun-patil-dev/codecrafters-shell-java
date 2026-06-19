@@ -60,6 +60,10 @@ public class Main {
 
             // type
             if (command.equals("type")) {
+                if (parts.length < 2) {
+                    continue;
+                }
+
                 String target = parts[1];
 
                 if (builtins.contains(target)) {
@@ -84,8 +88,9 @@ public class Main {
 
                 cmd.add(executable);
 
-                // pass argv[0], argv[1], ...
-                Collections.addAll(cmd, parts);
+                for (int i = 1; i < parts.length; i++) {
+                    cmd.add(parts[i]);
+                }
 
                 Process process = new ProcessBuilder(cmd)
                         .inheritIO()
