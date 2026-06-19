@@ -27,7 +27,7 @@ public class Main {
         BufferedReader reader =
                 new BufferedReader(new InputStreamReader(System.in));
 
-        Set<String> builtins = Set.of("echo", "exit", "type");
+        Set<String> builtins = Set.of("echo", "exit", "type", "pwd");
 
         while (true) {
             System.out.print("$ ");
@@ -54,7 +54,14 @@ public class Main {
             // echo
             if (command.equals("echo")) {
                 System.out.println(
-                        input.length() > 5 ? input.substring(5) : "");
+                        input.length() > 5 ? input.substring(5) : ""
+                );
+                continue;
+            }
+
+            // pwd
+            if (command.equals("pwd")) {
+                System.out.println(System.getProperty("user.dir"));
                 continue;
             }
 
@@ -87,7 +94,7 @@ public class Main {
             if (executable != null) {
                 List<String> cmd = new ArrayList<>();
 
-                // IMPORTANT: use command name, not full path
+                // Use command name instead of full path
                 cmd.add(command);
 
                 for (int i = 1; i < parts.length; i++) {
