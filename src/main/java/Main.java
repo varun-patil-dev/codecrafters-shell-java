@@ -13,7 +13,11 @@ public class Main {
             String command = reader.readLine();
 
             if (command == null) {
-                break; // EOF
+                break;
+            }
+
+            if (command.equals("exit")) {
+                System.exit(0);
             }
 
             System.out.println(command + ": command not found");
