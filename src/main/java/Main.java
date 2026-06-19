@@ -43,7 +43,7 @@ public class Main {
                 continue;
             }
 
-            String[] parts = input.split(" ");
+            String[] parts = input.trim().split("\\s+");
             String command = parts[0];
 
             // exit
@@ -77,6 +77,7 @@ public class Main {
                         System.out.println(target + ": not found");
                     }
                 }
+
                 continue;
             }
 
@@ -86,17 +87,30 @@ public class Main {
             if (executable != null) {
                 List<String> cmd = new ArrayList<>();
 
-                cmd.add(executable);
+                // IMPORTANT: use command name, not full path
+                cmd.add(command);
 
                 for (int i = 1; i < parts.length; i++) {
                     cmd.add(parts[i]);
                 }
 
-                Process process = new ProcessBuilder(cmd)
-                        .inheritIO()
-                        .start();
+                ProcessBuilder pb = new ProcessBuilder(cmd);
 
+                File exeFile = new File(executable);
+                String parentDir = exeFile.getParent();
+
+                Map<String, String> env = pb.environment();
+                env.put(
+                        "PATH",
+                        parentDir + File.pathSeparator
+                                + env.getOrDefault("PATH", "")
+                );
+
+                pb.inheritIO();
+
+                Process process = pb.start();
                 process.waitFor();
+
                 continue;
             }
 
