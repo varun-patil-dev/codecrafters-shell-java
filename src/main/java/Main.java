@@ -39,19 +39,26 @@ public class Main {
                 break;
             }
 
+            if (input.isBlank()) {
+                continue;
+            }
+
             String[] parts = input.split(" ");
             String command = parts[0];
 
+            // exit
             if (command.equals("exit")) {
                 break;
             }
 
+            // echo
             if (command.equals("echo")) {
                 System.out.println(
                         input.length() > 5 ? input.substring(5) : "");
                 continue;
             }
 
+            // type
             if (command.equals("type")) {
                 String target = parts[1];
 
@@ -66,6 +73,25 @@ public class Main {
                         System.out.println(target + ": not found");
                     }
                 }
+                continue;
+            }
+
+            // external executable
+            String executable = findExecutable(command);
+
+            if (executable != null) {
+                List<String> cmd = new ArrayList<>();
+
+                cmd.add(executable);
+
+                // pass argv[0], argv[1], ...
+                Collections.addAll(cmd, parts);
+
+                Process process = new ProcessBuilder(cmd)
+                        .inheritIO()
+                        .start();
+
+                process.waitFor();
                 continue;
             }
 
