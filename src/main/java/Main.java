@@ -1,11 +1,31 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
 
 public class Main {
+
+    private static String findExecutable(String command) {
+        String pathEnv = System.getenv("PATH");
+
+        if (pathEnv == null) {
+            return null;
+        }
+
+        String[] paths = pathEnv.split(File.pathSeparator);
+
+        for (String dir : paths) {
+            File file = new File(dir, command);
+
+            if (file.exists() && file.isFile() && file.canExecute()) {
+                return file.getAbsolutePath();
+            }
+        }
+
+        return null;
+    }
+
     public static void main(String[] args) throws Exception {
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(System.in));
+        BufferedReader reader =
+                new BufferedReader(new InputStreamReader(System.in));
 
         Set<String> builtins = Set.of("echo", "exit", "type");
 
@@ -20,7 +40,6 @@ public class Main {
             }
 
             String[] parts = input.split(" ");
-
             String command = parts[0];
 
             if (command.equals("exit")) {
@@ -28,16 +47,8 @@ public class Main {
             }
 
             if (command.equals("echo")) {
-                StringBuilder sb = new StringBuilder();
-
-                for (int i = 1; i < parts.length; i++) {
-                    if (i > 1) {
-                        sb.append(" ");
-                    }
-                    sb.append(parts[i]);
-                }
-
-                System.out.println(sb);
+                System.out.println(
+                        input.length() > 5 ? input.substring(5) : "");
                 continue;
             }
 
@@ -47,9 +58,14 @@ public class Main {
                 if (builtins.contains(target)) {
                     System.out.println(target + " is a shell builtin");
                 } else {
-                    System.out.println(target + ": not found");
-                }
+                    String path = findExecutable(target);
 
+                    if (path != null) {
+                        System.out.println(target + " is " + path);
+                    } else {
+                        System.out.println(target + ": not found");
+                    }
+                }
                 continue;
             }
 
